@@ -78,7 +78,12 @@ target/
 .ipynb_checkpoints
 
 # Visual Studio Code
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
 
 # IPython
 profile_default/
