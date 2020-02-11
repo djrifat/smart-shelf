@@ -4,7 +4,7 @@ casc_path = 'data/haarcascade_frontalface_alt.xml'
 faceCascade = cv2.CascadeClassifier(casc_path)
 
 # grab the reference to the webcam
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -32,7 +32,6 @@ while True:
 		cv2.putText(frame, str(len(faces)),(x,y+h),cv2.FONT_HERSHEY_SIMPLEX,.7,(150,150,0),2)
 		print("Found {0} faces!".format(len(faces)))
 
-
 	# show the frame to our screen
 	cv2.imshow("Video", frame)
 	print(faces)
@@ -42,4 +41,5 @@ while True:
 		break
 
 # close all windows
+cap.release()
 cv2.destroyAllWindows()
