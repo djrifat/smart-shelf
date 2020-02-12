@@ -43,3 +43,6 @@ while True:
 # close all windows
 cap.release()
 cv2.destroyAllWindows()
+
+
+
