@@ -1,5 +1,0 @@
-{
-  "python.pythonPath": "/Users/jedakiller/.pyenv/versions/miniconda3-latest/envs/smartshelf/bin/python",
-  "python.linting.pylintEnabled": true,
-  "python.linting.enabled": true
-}
