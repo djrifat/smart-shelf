@@ -5,6 +5,14 @@ from scipy.spatial import distance as dist
 from collections import OrderedDict
 import numpy as np
 
+# TODO
+# Assign unique ID to each detected object
+# Keep track of objects and decide when to deregister them
+	# Loop through object list to append new id's
+	# and to check if an object needs to be deregistered
+	#
+# Use Eulclidean distance to calculate new centroid of an tracked object
+	# Store and update in ordered dictionary
 
 class CentroidTracker():
 
@@ -50,6 +58,28 @@ class CentroidTracker():
 				# is reached for a given object and remove if needed
 				if self.disappeared[object_ID] > self.maxDisappeared:
 					self.deregister(object_ID)
+
+			# Return early if there's no object tracking info
+			return self.objects
+
+		# Initialize array of input centroids for the current frame
+		inputCentroids = np.zeros(len(rectangles), 2, dtype="int")
+
+		# Loop through bounding boxes
+		for (i, (startX, startY, endX, endY)) in enumerate(rectangles):
+			# Derive the centroid using the bounding box coordinates
+			# Store derived coordinates in numpy array
+			cX = int((startX + endX) / 2.0)
+			cY = int((startY + endY) / 2.0)
+			inputCentroids[i] = (cX, cY)
+
+		# If no objects are tracked
+		# take input centroids and register them
+		if len(self.objects) == 0:
+			for i in range(0, len(inputCentroids)):
+				self.register(inputCentroids[i])
+
+
 
 
 
