@@ -1,11 +1,13 @@
 import cv2
 from imutils.video import FPS
+import argparse
 
 casc_path = 'data/haarcascade_frontalface_alt.xml'
 faceCascade = cv2.CascadeClassifier(casc_path)
 
 # grab the reference to the webcam
 cap = cv2.VideoCapture(0)
+
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
@@ -48,7 +50,7 @@ while True:
 	print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 	# if the 'q' key is pressed, stop the loop
-	if cv2.waitKey(1) & 0xFF == ord('q'):
+	if cv2.waitKey(0) & 0xFF == ord('q'):
 		break
 
 # close all windows
