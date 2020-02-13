@@ -63,7 +63,7 @@ class CentroidTracker():
 			return self.objects
 
 		# Initialize array of input centroids for the current frame
-		inputCentroids = np.zeros(len(rectangles), 2, dtype="int")
+		input_centroids = np.zeros(len(rectangles), 2, dtype="int")
 
 		# Loop through bounding boxes
 		for (i, (startX, startY, endX, endY)) in enumerate(rectangles):
@@ -71,15 +71,33 @@ class CentroidTracker():
 			# Store derived coordinates in numpy array
 			cX = int((startX + endX) / 2.0)
 			cY = int((startY + endY) / 2.0)
-			inputCentroids[i] = (cX, cY)
+			input_centroids[i] = (cX, cY)
 
 		# If no objects are tracked
 		# take input centroids and register them
 		if len(self.objects) == 0:
-			for i in range(0, len(inputCentroids)):
-				self.register(inputCentroids[i])
+			for i in range(0, len(input_centroids)):
+				self.register(input_centroids[i])
 
+		# If objects are being tracked
+		# match the input centroids to existing object centroids
+		else:
+			# Fetch set of objects IDs and corresponding centroids
+			object_IDs = list(self.objects.keys())
+			object_centroids = list(self.objects.values())
 
+			# Compute distance (Euclidean) between object centroid and input centroid
+			# to match an input centroid to an existing object centroid
+			object_centroid_distance = dist.cdist(np.array(object_centroids), input_centroids)
+
+			# Find smallest value in each row
+			# Sort tow index based on minimal value
+			# Sets the row with the smallest value at the front of the index list
+			rows = object_centroid_distance.min(axis=1).argsort()
+
+			# Find smallest value in each column
+			# and sort based on previously computed row index
+			cols = object_centroid_distance.argmin(axis=1)[rows]
 
 
 
