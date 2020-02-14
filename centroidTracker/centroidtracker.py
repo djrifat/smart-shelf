@@ -1,7 +1,10 @@
 # Created by @DJrif
 
 '''
-Detect objects using, centroid tracking method
+Detect objects using centroid tracking method. 
+Centroids are calculated by there Euclidean distance.
+The tracker takes any object detector as input, 
+provided it produces an set of bounding boxes ((x1,y1) (x2,y2))
 '''
 
 # Import necessary packages
@@ -128,9 +131,36 @@ class CentroidTracker():
 				used_rows.add(row)
 				used_cols.add(col)
 
-				
+				# Compute row and col index that haven't been examined yet
+				unused_rows = set(range(object_centroid_distance.shape[0])).difference(used_rows)
+				unused_cols = set(range(object_centroid_distance[1])).difference(used_cols)
 
-		
+				# In case object centroids(current) are bigger then the input centroids(new),
+				# check if any objects are lost or disappeared
+				if object_centroid_distance.shape[0] >= object_centroid_distance.shape[1]:					
+					for row in unused_rows:
+						# Take object ID for matching row index 
+						# and increment disappeared counter
+						object_ID = object_IDs[row]
+						self.disappeared[object_ID] += 1
+
+						# Check if object exceeds max amount of consecutive frames
+						# it's allowed to disppear. If so, deregister the object
+						if self.disappeared[objectID] > self.maxDisappeared:
+							self.deregister(object_ID)
+
+						# Nr of input centroids(new) is greater existing centroids,
+						# register new input centroids 
+						else:
+							for col in unused_cols:
+								self.register(input_centroids[col])
+
+					return self.objects
+
+
+
+						
+
 					
 
 
