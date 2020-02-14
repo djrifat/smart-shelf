@@ -50,7 +50,7 @@ while True:
 	print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 	# if the 'q' key is pressed, stop the loop
-	if cv2.waitKey(0) & 0xFF == ord('q'):
+	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
 # close all windows
