@@ -1,9 +1,13 @@
 # Created by @DJrif
 
+'''
+Detect objects using, centroid tracking method
+'''
+
 # Import necessary packages
+import numpy as np
 from scipy.spatial import distance as dist
 from collections import OrderedDict
-import numpy as np
 
 # TODO
 # Assign unique ID to each detected object
@@ -45,7 +49,7 @@ class CentroidTracker():
 		del self.objects[object_ID]
 		del self.disappeared[object_ID]
 
-	# summary
+	#
 	# @param rectangles:
 	def update(self, rectangles):
 		# Check if bounding box input list is empty
@@ -100,10 +104,34 @@ class CentroidTracker():
 			# and sort based on previously computed row index
 			cols = object_centroid_distance.argmin(axis=1)[rows]
 
+			# Track rows and columns indexes that have been examined
+			# in order to determine what action needs to be taken (update, register, deregister)
+			used_rows = set()
+			used_cols = set()
 
+			# Loop over row, column index tulpes
+			for (row, col) in zip(rows, cols):
 
+				# If value (row/col) already has been examined ignore it
+				if row in used_rows or col in used_cols:
+					continue
 
+				# if value hasn't been examined yet,
+				# grab object ID(current row) set new centroid
+				# reset dissapeared counter
+				object_ID = object_IDs(row)
+				self.objects[object_ID] = input_centroids[col]
+				self.disappeared[object_ID] = 0
 
+				# Indicates that each row/column index 
+				# have been examined, respectively
+				used_rows.add(row)
+				used_cols.add(col)
+
+				
+
+		
+					
 
 
 
