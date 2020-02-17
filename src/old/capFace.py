@@ -2,7 +2,7 @@ import cv2
 from imutils.video import FPS
 import argparse
 
-casc_path = 'data/haarcascade_frontalface_alt.xml'
+casc_path = 'haarcascade_frontalface_alt.xml'
 faceCascade = cv2.CascadeClassifier(casc_path)
 
 # grab the reference to the webcam
@@ -56,6 +56,4 @@ while True:
 # close all windows
 cap.release()
 cv2.destroyAllWindows()
-
-
 
