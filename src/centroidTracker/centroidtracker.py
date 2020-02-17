@@ -21,7 +21,11 @@ from collections import OrderedDict
 # Use Eulclidean distance to calculate new centroid of an tracked object
 	# Store and update in ordered dictionary
 
+
 class CentroidTracker():
+	'''
+	TODO: fill in info
+	'''
 
 	# @param maxDisappeared:
 	def __init__(self, maxDisappeared=50):
@@ -52,8 +56,9 @@ class CentroidTracker():
 		del self.objects[object_ID]
 		del self.disappeared[object_ID]
 
-	#
-	# @param rectangles:
+	# Update centroid tracker
+	# @param rectangles: List of bounding box rectangles, from an object detector. Input format tulpe(startX, startY, endX, endY)
+	# @return self.objects: 
 	def update(self, rectangles):
 		# Check if bounding box input list is empty
 		if len(rectangles) == 0:
@@ -70,7 +75,7 @@ class CentroidTracker():
 			return self.objects
 
 		# Initialize array of input centroids for the current frame
-		input_centroids = np.zeros(len(rectangles), 2, dtype="int")
+		input_centroids = np.zeros((len(rectangles), 2), dtype="int")
 
 		# Loop through bounding boxes
 		for (i, (startX, startY, endX, endY)) in enumerate(rectangles):
@@ -111,7 +116,7 @@ class CentroidTracker():
 			# in order to determine what action needs to be taken (update, register, deregister)
 			used_rows = set()
 			used_cols = set()
-
+			
 			# Loop over row, column index tulpes
 			for (row, col) in zip(rows, cols):
 
@@ -122,7 +127,7 @@ class CentroidTracker():
 				# if value hasn't been examined yet,
 				# grab object ID(current row) set new centroid
 				# reset dissapeared counter
-				object_ID = object_IDs(row)
+				object_ID = object_IDs[row]
 				self.objects[object_ID] = input_centroids[col]
 				self.disappeared[object_ID] = 0
 
@@ -132,8 +137,8 @@ class CentroidTracker():
 				used_cols.add(col)
 
 			# Compute row and col index that haven't been examined yet
-			unused_rows = set(range(object_centroid_distance.shape[0])).difference(used_rows)
-			unused_cols = set(range(object_centroid_distance[1])).difference(used_cols)
+			unused_rows = set(range(0, object_centroid_distance.shape[0])).difference(used_rows)
+			unused_cols = set(range(0, object_centroid_distance.shape[1])).difference(used_cols)
 
 			# In case object centroids(current) are bigger then the input centroids(new),
 			# check if any objects are lost or disappeared
@@ -146,7 +151,7 @@ class CentroidTracker():
 
 					# Check if object exceeds max amount of consecutive frames
 					# it's allowed to disppear. If so, deregister the object
-					if self.disappeared[objectID] > self.maxDisappeared:
+					if self.disappeared[object_ID] > self.maxDisappeared:
 						self.deregister(object_ID)
 
 			# Nr of input centroids(new) is greater existing centroids,
