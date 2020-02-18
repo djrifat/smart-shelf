@@ -9,7 +9,6 @@ import imutils
 import time
 import cv2
 
-
 # Construct argument parser and parse arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--prototxt", required=True,
