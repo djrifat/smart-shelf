@@ -12,23 +12,14 @@ import numpy as np
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 
-# TODO
-# Assign unique ID to each detected object
-# Keep track of objects and decide when to deregister them
-	# Loop through object list to append new id's
-	# and to check if an object needs to be deregistered
-	#
-# Use Eulclidean distance to calculate new centroid of an tracked object
-	# Store and update in ordered dictionary
-
 
 class CentroidTracker():
 	'''
 	TODO: fill in info
 	'''
 
-	# @param maxDisappeared:
-	def __init__(self, maxDisappeared=50):
+	# @param max_disappear:
+	def __init__(self, max_disappear=50):
 		# Initialize unique object ID
 		# Ordered dictionaries to keep track of object ID's and its centroids
 		self.next_object_ID = 0
@@ -37,7 +28,7 @@ class CentroidTracker():
 
 		# Number of consecutive frames an object is allowed
 		# to be marked as "disappeared" untill it needs to be deregistered from tracking
-		self.maxDisappeared = maxDisappeared
+		self.max_disappear = max_disa
 
 
 	# Add new objects to tracker (object dictionary)
@@ -68,7 +59,7 @@ class CentroidTracker():
 
 				# Check if max number consecutive frames
 				# is reached for a given object and remove if needed
-				if self.disappeared[object_ID] > self.maxDisappeared:
+				if self.disappeared[object_ID] > self.max_disappear:
 					self.deregister(object_ID)
 
 			# Return early if there's no object tracking info
@@ -151,7 +142,7 @@ class CentroidTracker():
 
 					# Check if object exceeds max amount of consecutive frames
 					# it's allowed to disppear. If so, deregister the object
-					if self.disappeared[object_ID] > self.maxDisappeared:
+					if self.disappeared[object_ID] > self.max_disappear:
 						self.deregister(object_ID)
 
 			# Nr of input centroids(new) is greater existing centroids,
