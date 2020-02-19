@@ -27,7 +27,7 @@ class CentroidTracker():
 	TODO: fill in info
 	'''
 
-	# @param maxDisappeared:
+	# @param maxDisappeared: Number of consecutive frames an object is allowed to "disappear"
 	def __init__(self, maxDisappeared=50):
 		# Initialize unique object ID
 		# Ordered dictionaries to keep track of object ID's and its centroids
