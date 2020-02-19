@@ -1,5 +1,4 @@
 {
-
     // Number of consecutive frames an object is allowed
     // to be marked as "disappeared" untill it needs to be deregistered from tracking
     "max_disappear": 10,
@@ -7,8 +6,15 @@
     // maximum distance between centroids to associate an object --
     // if the distance is larger than this maximum distance we'll
     // start to mark the object as "disappeared"
-    "max_distance": 175
+    "max_distance": 175,
 
+    "confidence": "",
+
+    "model_path": "",
+
+    "prototxt_path": "",
+
+    "frame_width": ""
 
 }
 

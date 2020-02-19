@@ -12,7 +12,6 @@ import numpy as np
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 
-
 class CentroidTracker():
 	'''
 	TODO: fill in info
