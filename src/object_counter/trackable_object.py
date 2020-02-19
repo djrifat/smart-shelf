@@ -1,4 +1,5 @@
 
+
 class TrackableObject(self, object_id, centroid):
     # Store object ID and initialize a list of centroids
     # Use current centroid
