@@ -1,8 +1,10 @@
 # USAGE
 # python object_tracker.py --prototxt deploy.prototxt --model res10_300x300_ssd_iter_140000.caffemodel
+# python object_tracker.py --conf utils/config.json
 
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream
+from utils import conf
 import numpy as np
 import argparse
 import imutils
@@ -11,13 +13,11 @@ import cv2
 
 # Construct argument parser and parse arguments
 ap = argparse.ArgumentParser()
-ap.add_argument("-p", "--prototxt", required=True,
-	help="path to Caffe 'deploy' prototxt file")
-ap.add_argument("-m", "--model", required=True,
-	help="path to Caffe pre-trained model")
-ap.add_argument("-c", "--confidence", type=float, default=0.5,
-	help="minimum probability to filter weak detections")
+ap.add_argument('-c', '--conf', required=True,
+    help='Path to config file')
 args = vars(ap.parse_args())
+conf = conf.Conf(args["conf"])
+
 
 # Initialize centroid tracker and frame dimensions
 ct = CentroidTracker()
@@ -26,10 +26,11 @@ ct = CentroidTracker()
 temp_proto_path = 'deploy.prototxt'
 temp_model_path = 'res10_300x300_ssd_iter_140000.caffemodel'
 temp_confidence = 0.5
+frame_width = 640
 
 # Load serialized model from disk
 print("[INFO] loading model...")
-net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
+net = cv2.dnn.readNetFromCaffe(conf["prototxt_path"], conf["model_path"])
 
 # Initialize video stream and warmup camera sensor
 print("[INFO] starting video stream")
@@ -41,7 +42,7 @@ while True:
 
     # Read frame and resize it
     frame = vs.read()
-    frame = imutils.resize(frame, width=640)
+    frame = imutils.resize(frame, width=conf["frame_width"])
 
     # Grab frames if dimensions are None
     if W is None or H is None:
@@ -61,7 +62,7 @@ while True:
     for i in range(0, detections.shape[2]):
         # Filter out weak detections
         # Ensure predicted probability is greater then minimum threshold
-        if detections[0, 0 ,i ,2] > args['confidence']:
+        if detections[0, 0 ,i ,2] > conf['confidence']:
             # Compute x,y bounding box coordinates for object
             # Update bounding box rectangles list
             box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
@@ -72,7 +73,7 @@ while True:
 
             # Confidence check face detection
             confidence = detections[0, 0 ,i ,2]
-            if confidence < args['confidence']:
+            if confidence < conf['confidence']:
                 continue
 
     # Update centroid tracker with computed bounding boxes
