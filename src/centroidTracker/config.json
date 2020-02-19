@@ -1,0 +1,14 @@
+{
+    // Minimum confidence
+    "confidence": "",
+
+    // Path to pre-trained Caffe object detection model
+    "model_path": "",
+
+    // Path to prototxt file of the object detection model
+    "prototxt_path": "",
+
+    "frame_width": ""
+
+}
+
