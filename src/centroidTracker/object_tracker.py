@@ -23,11 +23,6 @@ conf = conf.Conf(args["conf"])
 ct = CentroidTracker()
 (H, W) = (None, None)
 
-temp_proto_path = 'deploy.prototxt'
-temp_model_path = 'res10_300x300_ssd_iter_140000.caffemodel'
-temp_confidence = 0.5
-frame_width = 640
-
 # Load serialized model from disk
 print("[INFO] loading model...")
 net = cv2.dnn.readNetFromCaffe(conf["prototxt_path"], conf["model_path"])

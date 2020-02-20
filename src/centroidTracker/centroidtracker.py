@@ -12,19 +12,14 @@ import numpy as np
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 
-# TODO
-# Assign unique ID to each detected object
-# Keep track of objects and decide when to deregister them
-	# Loop through object list to append new id's
-	# and to check if an object needs to be deregistered
-	#
-# Use Eulclidean distance to calculate new centroid of an tracked object
-	# Store and update in ordered dictionary
-
 
 class CentroidTracker():
 	'''
-	TODO: fill in info
+	Class method tracks objects using their centroid (center point),
+	the centroid is updated each frame by calculating the eacludian distance 
+	between the existing and new centroid. 
+	NOTE* The algorithm assumes the 
+
 	'''
 
 	# @param maxDisappeared: Number of consecutive frames an object is allowed to "disappear"
@@ -38,7 +33,6 @@ class CentroidTracker():
 		# Number of consecutive frames an object is allowed
 		# to be marked as "disappeared" untill it needs to be deregistered from tracking
 		self.maxDisappeared = maxDisappeared
-
 
 	# Add new objects to tracker (object dictionary)
 	# @param centroid:

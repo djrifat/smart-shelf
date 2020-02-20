@@ -9,7 +9,7 @@
     "prototxt_path": "models/deploy.prototxt",
 
     // Frame width in pixels
-    "frame_width": 640
+    "frame_width": 320
 
 }
 
