@@ -20,7 +20,7 @@ while True:
 	(grabbed, frame) = cap.read()
 
 	# if we are viewing a video and we did not grab a frame,
-	# then we have reached the end of the videoy
+	# then we have reached the end of the video
 	if frame is None:
 		break
 
