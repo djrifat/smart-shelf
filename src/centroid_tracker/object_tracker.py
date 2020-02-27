@@ -4,7 +4,7 @@
 
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
-from utils import conf
+from utils.conf import Conf
 import numpy as np
 import argparse
 import imutils
@@ -16,7 +16,7 @@ ap = argparse.ArgumentParser()
 ap.add_argument('-c', '--conf', required=True,
     help='Path to config file')
 args = vars(ap.parse_args())
-conf = conf.Conf(args["conf"])
+conf = Conf(args["conf"])
 
 
 # Initialize centroid tracker and frame dimensions
@@ -25,7 +25,8 @@ ct = CentroidTracker()
 
 # Load serialized model from disk
 print("[INFO] loading model...")
-net = cv2.dnn.readNetFromCaffe(conf["prototxt_path"], conf["model_path"])
+#net = cv2.dnn.readNetFromCaffe(conf["prototxt_path"], conf["model_path"])
+net = cv2.dnn.readNetFromCaffe(conf["prototxt"], conf["model"])
 
 # Initialize video stream and warmup camera sensor
 print("[INFO] starting video stream")

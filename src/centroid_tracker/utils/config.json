@@ -9,7 +9,9 @@
     "prototxt": "models/deploy.prototxt",
 
     // Frame width in pixels
-    "frame_width": 300
+    "frame_width": 300,
+
+    "skip_frames": 30
 
 }
 
