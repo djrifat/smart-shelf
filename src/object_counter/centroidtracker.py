@@ -27,7 +27,7 @@ class CentroidTracker():
 
 		# Number of consecutive frames an object is allowed
 		# to be marked as "disappeared" untill it needs to be deregistered from tracking
-		self.max_disappear = max_disa
+		self.max_disappear = max_disappear
 
 
 	# Add new objects to tracker (object dictionary)

@@ -2,6 +2,7 @@
 # python object_tracker.py --prototxt deploy.prototxt --model res10_300x300_ssd_iter_140000.caffemodel
 # python object_tracker.py --conf utils/config.json
 
+from trackable_object import TrackableObject
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
 from utils.conf import Conf
@@ -11,6 +12,7 @@ import imutils
 import time
 import cv2
 
+
 # Construct argument parser and parse arguments
 ap = argparse.ArgumentParser()
 ap.add_argument('-c', '--conf', required=True,
@@ -18,14 +20,14 @@ ap.add_argument('-c', '--conf', required=True,
 args = vars(ap.parse_args())
 conf = Conf(args["conf"])
 
-
 # Initialize centroid tracker and frame dimensions
 ct = CentroidTracker()
-(H, W) = (None, None)
+trackers = []
+trackable_objects = {}
+H, W = None, None
 
 # Load serialized model from disk
 print("[INFO] loading model...")
-#net = cv2.dnn.readNetFromCaffe(conf["prototxt_path"], conf["model_path"])
 net = cv2.dnn.readNetFromCaffe(conf["prototxt"], conf["model"])
 
 # Initialize video stream and warmup camera sensor
@@ -34,6 +36,8 @@ vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
 # Start FPS counter
+# and initialize total number of processed frames
+total_frames = 0
 fps = FPS().start()
 
 # Loop through frames from video stream
@@ -47,12 +51,16 @@ while True:
     if W is None or H is None:
         (H,W) = frame.shape[:2]
 
+    # Initalize list of bounding boxes
+    # and object detector status
+    rectangles = []
+    status = "Waiting..."
+
     # Create a blob from the frame, pass the frame through 
     # the CNN to obtain predections and initialize list of bounding box rectangles
     blob = cv2.dnn.blobFromImage(frame, 1.0, (W,H), (104.0, 177.0, 123.0))
     net.setInput(blob)
     detections = net.forward()
-    rectangles = []
 
     # Process detections
     # Loop through detections
@@ -95,10 +103,11 @@ while True:
         break
 
     # Update FPS count
+    total_frames += 1
     fps.update()
 
-    # Stop FPS count and display the varbiables
-    fps.stop()
+# Stop FPS count and display the varbiables
+fps.stop()
 print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
 print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
