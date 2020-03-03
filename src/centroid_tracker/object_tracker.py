@@ -12,7 +12,6 @@ import imutils
 import time
 import cv2
 
-
 # Construct argument parser and parse arguments
 ap = argparse.ArgumentParser()
 ap.add_argument('-c', '--conf', required=True,
@@ -113,3 +112,5 @@ print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 cv2.destroyAllWindows()
 vs.stop()
+
+
