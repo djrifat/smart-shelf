@@ -21,8 +21,6 @@ conf = Conf(args["conf"])
 
 # Initialize centroid tracker and frame dimensions
 ct = CentroidTracker()
-trackers = []
-trackable_objects = {}
 H, W = None, None
 
 # Load serialized model from disk
@@ -72,8 +70,8 @@ while True:
             box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
             rectangles.append(box.astype("int"))
             # Draw bounding box around the object
-            (startX, startY, endX, endY) = box.astype("int")
-            cv2.rectangle(frame, (startX, startY), (endX, endY), (0,255,0), 2)
+            (start_x, start_y, end_x, end_y) = box.astype("int")
+            cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 2)
 
             # Confidence check face detection
             confidence = detections[0, 0 ,i ,2]
@@ -91,7 +89,7 @@ while True:
         text2 = "{:.2f}%".format(confidence * 100)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
-        cv2.putText(frame, text2, (startX, startY),
+        cv2.putText(frame, text2, (start_x, start_y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
         cv2.circle(frame, (centroid[0], centroid[1]), 4, (0,255,0), -1)
 

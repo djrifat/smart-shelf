@@ -8,6 +8,8 @@
     // Path to prototxt file of the object detection model
     "prototxt": "models/deploy.prototxt",
 
+    "skip_frames": 2,
+
     // Frame width and height in pixels
     "frame_width": 300,
     "frame_height": 300
