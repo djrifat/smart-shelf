@@ -14,10 +14,12 @@ from collections import OrderedDict
 
 class CentroidTracker():
 	'''
-	TODO: fill in info
+	Detect the centroid in an bounding box and 
+	keep track of the centroid location.
+	Uses Euclidean distant to calculate the new centroid of the tracked object
 	'''
 
-	# @param max_disappear:
+	# @param max_disappear: Max ammount of consecutive frames an object may disappear
 	def __init__(self, max_disappear=50):
 		# Initialize unique object ID
 		# Ordered dictionaries to keep track of object ID's and its centroids
@@ -31,7 +33,7 @@ class CentroidTracker():
 
 
 	# Add new objects to tracker (object dictionary)
-	# @param centroid:
+	# @param centroid: centroid of the tracked object
 	def register(self, centroid):
 		# Use next available object ID to store the centroid
 		self.objects[self.next_object_ID] = centroid
@@ -39,7 +41,7 @@ class CentroidTracker():
 		self.next_object_ID += 1
 
 	# Deregister objects from the tracker
-	# @param object_ID:
+	# @param object_ID: Unique object ID which is assigned to every object
 	def deregister(self, object_ID):
 		# Delete object ID from respective dictionaries
 		# to deregister an object ID
@@ -48,7 +50,7 @@ class CentroidTracker():
 
 	# Update centroid tracker
 	# @param rectangles: List of bounding box rectangles, from an object detector. Input format tulpe(startX, startY, endX, endY)
-	# @return self.objects: 
+	# @return self.objects: Dictionary containing tracked objects
 	def update(self, rectangles):
 		# Check if bounding box input list is empty
 		if len(rectangles) == 0:
