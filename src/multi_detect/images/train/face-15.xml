@@ -1,0 +1,26 @@
+<annotation>
+	<folder>images</folder>
+	<filename>face-15.jpg</filename>
+	<path>/Users/jedakiller/Documents/data/images/face-15.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1024</width>
+		<height>1478</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>facew</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>532</xmin>
+			<ymin>104</ymin>
+			<xmax>672</xmax>
+			<ymax>280</ymax>
+		</bndbox>
+	</object>
+</annotation>

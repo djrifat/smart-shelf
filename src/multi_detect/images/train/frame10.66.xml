@@ -1,0 +1,26 @@
+<annotation>
+	<folder>hands10</folder>
+	<filename>frame10.66.jpg</filename>
+	<path>/Users/jedakiller/Documents/_LABELLED_SAMPLES/hands10/frame10.66.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>hand</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>492</xmin>
+			<ymin>173</ymin>
+			<xmax>620</xmax>
+			<ymax>307</ymax>
+		</bndbox>
+	</object>
+</annotation>

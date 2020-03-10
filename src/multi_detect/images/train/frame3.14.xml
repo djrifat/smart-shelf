@@ -1,0 +1,26 @@
+<annotation>
+	<folder>hands3</folder>
+	<filename>frame3.14.jpg</filename>
+	<path>/Users/jedakiller/Documents/_LABELLED_SAMPLES/hands3/frame3.14.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1280</width>
+		<height>720</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>hand</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>462</xmin>
+			<ymin>70</ymin>
+			<xmax>652</xmax>
+			<ymax>198</ymax>
+		</bndbox>
+	</object>
+</annotation>
