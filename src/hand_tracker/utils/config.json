@@ -1,15 +1,17 @@
 {
     // Minimum confidence
-    "confidence": 0.6,
+    "confidence": 0.2,
 
     // Path to pre-trained Caffe object detection model
-    "model": "models/res10_300x300_ssd_iter_140000.caffemodel",
+    "model": "models/pose_iter_102000.caffemodel",
 
     // Path to prototxt file of the object detection model
-    "prototxt": "models/deploy.prototxt",
+    "prototxt": "models/pose_deploy.prototxt",
 
     // Frame width and height in pixels
     "frame_width": 300,
     "frame_height": 300
+
+    
 }
 
