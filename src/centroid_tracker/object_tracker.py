@@ -1,8 +1,7 @@
 # USAGE
-# python object_tracker.py --prototxt deploy.prototxt --model res10_300x300_ssd_iter_140000.caffemodel
 # python object_tracker.py --conf utils/config.json
 
-from trackable_object import TrackableObject
+#from trackable_object import TrackableObject
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
 from utils.conf import Conf
@@ -12,7 +11,7 @@ import imutils
 import time
 import cv2
 
-# Construct argument parser and parse arguments
+# Construct argument parser and parse argumentsa()
 ap = argparse.ArgumentParser()
 ap.add_argument('-c', '--conf', required=True,
     help='Path to config file')
@@ -21,7 +20,7 @@ conf = Conf(args["conf"])
 
 # Initialize centroid tracker and frame dimensions
 ct = CentroidTracker()
-H, W = None, None
+(H, W)= (None, None)
 
 # Load serialized model from disk
 print("[INFO] loading model...")
@@ -39,25 +38,20 @@ fps = FPS().start()
 
 # Loop through frames from video stream
 while True:
-
     # Read frame and resize it
     frame = vs.read()
     frame = imutils.resize(frame, width=conf["frame_width"])
 
     # Grab frames if dimensions are None
     if W is None or H is None:
-        (H,W) = frame.shape[:2]
-
-    # Initalize list of bounding boxes
-    # and object detector status
-    rectangles = []
-    status = "Waiting..."
+        (H, W) = frame.shape[:2]
 
     # Create a blob from the frame, pass the frame through 
     # the CNN to obtain predections and initialize list of bounding box rectangles
     blob = cv2.dnn.blobFromImage(frame, 1.0, (W,H), (104.0, 177.0, 123.0))
     net.setInput(blob)
     detections = net.forward()
+    rectangles = []
 
     # Process detections
     # Loop through detections
@@ -69,14 +63,15 @@ while True:
             # Update bounding box rectangles list
             box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
             rectangles.append(box.astype("int"))
+            
             # Draw bounding box around the object
             (start_x, start_y, end_x, end_y) = box.astype("int")
             cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 2)
 
             # Confidence check face detection
             confidence = detections[0, 0 ,i ,2]
-            if confidence < conf['confidence']:
-                continue
+            #if confidence < conf['confidence']:
+            #    continue
 
     # Update centroid tracker with computed bounding boxes
     objects = ct.update(rectangles)

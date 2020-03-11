@@ -16,10 +16,8 @@ from collections import OrderedDict
 class CentroidTracker():
 	'''
 	Class method tracks objects using their centroid (center point),
-	the centroid is updated each frame by calculating the eacludian distance 
+	the centroid is updated each frame by calculating the Euclidean distance 
 	between the existing and new centroid. 
-	NOTE* The algorithm assumes the 
-
 	'''
 
 	# @param maxDisappeared: Number of consecutive frames an object is allowed to "disappear"
