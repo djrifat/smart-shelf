@@ -40,11 +40,14 @@ fps = FPS().start()
 while True:
     # Read frame and resize it
     frame = vs.read()
+    frame2 = vs.read()
     frame = imutils.resize(frame, width=conf["frame_width"])
+    frame2 = imutils.resize(frame2, width=conf["frame_width"])
 
     # Grab frames if dimensions are None
     if W is None or H is None:
         (H, W) = frame.shape[:2]
+        (H, W) = frame2.shape[:2]
 
     # Create a blob from the frame, pass the frame through 
     # the CNN to obtain predections and initialize list of bounding box rectangles
@@ -67,6 +70,7 @@ while True:
             # Draw bounding box around the object
             (start_x, start_y, end_x, end_y) = box.astype("int")
             cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 2)
+            cv2.rectangle(frame2, (start_x, start_y), (end_x, end_y), (0,255,0), 2)
 
             # Confidence check face detection
             confidence = detections[0, 0 ,i ,2]
@@ -87,9 +91,11 @@ while True:
         cv2.putText(frame, text2, (start_x, start_y),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
         cv2.circle(frame, (centroid[0], centroid[1]), 4, (0,255,0), -1)
-
+    #frame2 = frame
     # Show output frame
-    cv2.imshow("Frame", frame)
+    #final = cv2.vconcat([frame, frame2])
+    cv2.imshow("Foo", frame)
+    cv2.imshow("Bar", frame2)
     key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break

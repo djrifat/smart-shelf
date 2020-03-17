@@ -50,7 +50,6 @@ while True:
     # Initalize list of bounding boxes
     # and object detector status
     rectangles = []
-    status = "Waiting..."
 
     # Create a blob from the frame, pass the frame through 
     # the CNN to obtain predections and initialize list of bounding box rectangles
@@ -74,8 +73,6 @@ while True:
 
             # Confidence check face detection
             confidence = detections[0, 0 ,i ,2]
-            if confidence < conf['confidence']:
-                continue
 
     # Update centroid tracker with computed bounding boxes
     objects = ct.update(rectangles)
