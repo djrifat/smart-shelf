@@ -12,7 +12,7 @@ POSE_PAIRS = [ [0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[0,9],[9,10],[10,
 threshold = 0.2
 
 
-input_source = "asl.mp4"
+input_source = "usaa.mp4"
 cap = cv2.VideoCapture(input_source)
 hasFrame, frame = cap.read()
 
@@ -23,7 +23,7 @@ aspect_ratio = frameWidth/frameHeight
 
 inHeight = 368
 inWidth = int(((aspect_ratio*inHeight)*8)//8)
-vid_writer = cv2.VideoWriter('output.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 15, (frame.shape[1],frame.shape[0]))
+vid_writer = cv2.VideoWriter('usa.avi',cv2.VideoWriter_fourcc('M','J','P','G'), 15, (frame.shape[1],frame.shape[0]))
 
 net = cv2.dnn.readNetFromCaffe(protoFile, weightsFile)
 while True:
