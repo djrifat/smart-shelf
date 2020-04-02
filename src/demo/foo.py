@@ -191,7 +191,7 @@ while True:
             
             # Draw bounding box around the object
             (start_x, start_y, end_x, end_y) = box.astype("int")
-            cv2.rectangle(face_frame, (start_x, start_y), (end_x, end_y), (0,255,0), 2)
+            cv2.rectangle(face_frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)
 
             # Confidence check face detection
             confidence = detections[0, 0 ,i ,2]
@@ -206,9 +206,9 @@ while True:
         text = "ID {}".format(object_ID)
         text2 = "{:.2f}%".format(confidence * 100)
         cv2.putText(face_frame, text, (centroid[0] - 10, centroid[1] - 10),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 2)
+			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
         cv2.putText(face_frame, text2, (start_x, start_y),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+			cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 1)
         cv2.circle(face_frame, (centroid[0], centroid[1]), 4, (0,255,0), -1)
 
     input_q.put(cv2.cvtColor(face_frame, cv2.COLOR_BGR2RGB))
