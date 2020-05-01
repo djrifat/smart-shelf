@@ -8,11 +8,11 @@ provided it produces an set of bounding boxes ((x1,y1) (x2,y2))
 '''
 
 # Import necessary packages
+import numpy as np
+import cv2
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 from imutils.video import FPS
-import numpy as np
-
 
 
 class CentroidTracker():
@@ -22,18 +22,17 @@ class CentroidTracker():
 	between the existing and new centroid. 
 	'''
 
-	# @param max_disappeared: Number of consecutive frames an object is allowed to "disappear"
-	def __init__(self, max_disappeared=50, max_distance=50):
+	# @param maxDisappeared: Number of consecutive frames an object is allowed to "disappear"
+	def __init__(self, maxDisappeared=50, maxDistance=50):
 		# Initialize unique object ID
 		# Ordered dictionaries to keep track of object ID's and its centroids
 		self.next_object_ID = 0
+		self.total_persons_detected = 0
+		self.fps = FPS()
 		self.objects = OrderedDict()
 		self.disappeared = OrderedDict()
-
-		# Number of consecutive frames an object is allowed
-		# to be marked as "disappeared" untill it needs to be deregistered from tracking
-		self.max_disappeared = max_disappeared
-		self.max_distance = max_disappeared
+		self.maxDisappeared = maxDisappeared
+		self.maxDistance = maxDistance
 
 	# Add new objects to tracker (object dictionary)
 	# @param centroid:
@@ -42,6 +41,13 @@ class CentroidTracker():
 		self.objects[self.next_object_ID] = centroid
 		self.disappeared[self.next_object_ID] = 0
 		self.next_object_ID += 1
+		self.total_persons_detected += 1
+		self.fps.start()  
+		print("START OBJECT TRACK TIME")
+		print("OBJECT REGISTERED: ", self.next_object_ID)
+	
+	def total_detections(self):
+		print("[INFO] Total detections today: ", self.total_persons_detected)
 
 	# Deregister objects from the tracker
 	# @param object_ID:
@@ -50,10 +56,16 @@ class CentroidTracker():
 		# to deregister an object ID
 		del self.objects[object_ID]
 		del self.disappeared[object_ID]
+		self.fps.stop()
+		print("[INFO] TIME DETECTED: {:.2f}".format(self.fps.elapsed()), "ID: ", object_ID)
+		self.next_object_ID -= 1
+
+	def time_alive(self, object_ID):
+		return None
 
 	# Update centroid tracker
 	# @param rectangles: List of bounding box rectangles, from an object detector. Input format tulpe(startX, startY, endX, endY)
-	# @return self.objects: 
+	# @return self.objects: Object list
 	def update(self, rectangles):
 		# Check if bounding box input list is empty
 		if len(rectangles) == 0:
@@ -63,7 +75,7 @@ class CentroidTracker():
 
 				# Check if max number consecutive frames
 				# is reached for a given object and remove if needed
-				if self.disappeared[object_ID] > self.max_disappeared:
+				if self.disappeared[object_ID] > self.maxDisappeared:
 					self.deregister(object_ID)
 
 			# Return early if there's no object tracking info
@@ -118,8 +130,11 @@ class CentroidTracker():
 				# If value (row/col) already has been examined ignore it
 				if row in used_rows or col in used_cols:
 					continue
-
-				if object_centroid_distance[row,col] > self.max_distance:
+				
+				# if the distance between centroids is greater than
+				# the maximum distance, do not associate the two
+				# centroids to the same object
+				if object_centroid_distance[row, col] > self.maxDistance:
 					continue
 
 				# if value hasn't been examined yet,
@@ -149,7 +164,7 @@ class CentroidTracker():
 
 					# Check if object exceeds max amount of consecutive frames
 					# it's allowed to disppear. If so, deregister the object
-					if self.disappeared[object_ID] > self.max_disappeared:
+					if self.disappeared[object_ID] > self.maxDisappeared:
 						self.deregister(object_ID)
 
 			# Nr of input centroids(new) is greater existing centroids,
@@ -158,6 +173,7 @@ class CentroidTracker():
 				for col in unused_cols:
 					self.register(input_centroids[col])
 
+		self.fps.update()
 		# Return tracked objects
 		return self.objects
 

@@ -27,12 +27,10 @@ class CentroidTracker():
 		# Initialize unique object ID
 		# Ordered dictionaries to keep track of object ID's and its centroids
 		self.next_object_ID = 0
+		self.total_persons_detected = 0
 		self.fps = FPS()
 		self.objects = OrderedDict()
 		self.disappeared = OrderedDict()
-
-		# Number of consecutive frames an object is allowed
-		# to be marked as "disappeared" untill it needs to be deregistered from tracking
 		self.maxDisappeared = maxDisappeared
 		self.maxDistance = maxDistance
 
@@ -43,9 +41,13 @@ class CentroidTracker():
 		self.objects[self.next_object_ID] = centroid
 		self.disappeared[self.next_object_ID] = 0
 		self.next_object_ID += 1
+		self.total_persons_detected += 1
 		self.fps.start()  
 		print("START OBJECT TRACK TIME")
 		print("OBJECT REGISTERED: ", self.next_object_ID)
+	
+	def total_detections(self):
+		print("[INFO] Total detections today: ", self.total_persons_detected)
 
 	# Deregister objects from the tracker
 	# @param object_ID:
