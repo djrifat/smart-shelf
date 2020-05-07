@@ -68,7 +68,7 @@ while True:
             box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
             rectangles.append(box.astype("int"))
             frame_faces = len(rectangles)
-            print("frame faces: ", frame_faces)
+            #print("frame faces: ", frame_faces)
             #buffer_frame = cv2.imencode(".jpg", frame)
             #print("[INFO]... Buffer frame created")
             (start_x, start_y, end_x, end_y) = box.astype("int")
