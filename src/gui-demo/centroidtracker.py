@@ -43,11 +43,12 @@ class CentroidTracker():
 		self.next_object_ID += 1
 		self.total_persons_detected += 1
 		self.fps.start()  
-		print("START OBJECT TRACK TIME")
-		print("OBJECT REGISTERED: ", self.next_object_ID)
+		print("[INFO]... OBJECT DETECTED")
+		print("[INFO]... START TRACKING OBJECT DWELL TIME")
+		print("[INFO]... OBJECT REGISTERED WITH ID: ", self.next_object_ID)
 	
 	def total_detections(self):
-		print("[INFO] Total detections today: ", self.total_persons_detected)
+		print("[INFO]... TOTAL DETECTIONS TODAY: ", self.total_persons_detected)
 
 	# Deregister objects from the tracker
 	# @param object_ID:
