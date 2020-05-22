@@ -1,5 +1,5 @@
 # USAGE
-# python snel.py --conf utils/config.json
+# python foo.py --conf utils/config.json
 
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
@@ -24,11 +24,11 @@ conf = Conf(args["conf"])
 ct = CentroidTracker()
 
 # Load serialized model from disk
-print("[INFO] loading model...")
+print("[INFO] Loading model...")
 net = cv2.dnn.readNetFromCaffe(conf["prototxt"], conf["model"])
 
 # Initialize video stream and warmup camera sensor
-print("[INFO] starting video stream")
+print("[INFO] Starting video stream")
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
@@ -95,8 +95,8 @@ while True:
 
 # Stop FPS count and display the varbiables
 fps.stop()
-print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
-print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
+print("[INFO] Elapsed time: {:.2f}".format(fps.elapsed()))
+print("[INFO] Approx. FPS: {:.2f}".format(fps.fps()))
 ct.total_detections()
 
 cv2.destroyAllWindows()
