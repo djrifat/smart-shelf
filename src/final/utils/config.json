@@ -12,7 +12,9 @@
     "frame_width": 400,
     "frame_height": 400,
     
-    "camera_source": 0
+    "camera_source": 0,
+
+    "skip_frames": 30
 
 }
 

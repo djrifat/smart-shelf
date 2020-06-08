@@ -12,8 +12,15 @@ import time
 import PIL
 import cv2
 
+# Grab frame dimensions
+def grab_frame_dim(frame):
+    (H, W) = (None, None)
+    if H is None or W is None:
+        (H, W) = frame.shape[:2]
+    return (H,W)
 
-def make_request(img):
+# Make request to MS Face APi
+def make_request(buffer_frame):
 
     ENDPOINT = 'https://eastus.api.cognitive.microsoft.com/face/v1.0/detect'
     KEY = '2d0523e810c24bd5b7fd4448fbf71c67'   
@@ -31,7 +38,7 @@ def make_request(img):
     }
 
     f = BytesIO()
-    PIL.Image.fromarray(img).save(f, 'png')
+    PIL.Image.fromarray(buffer_frame).save(f, 'png')  
     data = f.getvalue()
 
     response = requests.post(data=data,url=ENDPOINT,headers=headers,params=params)
@@ -49,40 +56,18 @@ def get_rectangle(face_dict):
     
     return ((left, top), (right, bottom))
 
-# Grab frame dimensions
-def grab_frame_dim(frame):
-    (H, W) = (None, None)
-    if H is None or W is None:
-        (H, W) = frame.shape[:2]
-    return (H,W)
+def unpack_tracker(frame, tracker, rgb, rects):
+    tracker.update(rgb)
+    pos = tracker.get_position()
 
-def detect_faces(frame, net, ct):
-    # Grab frame dimensions
-    # Create a blob from the frame, pass the frame through 
-    # the CNN to obtain predections and initialize list of bounding box rectangles
-    (H,W) = grab_frame_dim(frame)
-    blob = cv2.dnn.blobFromImage(frame, 1.0, (W,H), (104.0, 177.0, 123.0))
-    net.setInput(blob)
-    detections = net.forward()
-    rectangles = []
+    start_x = int(pos.left())
+    start_y = int(pos.top())
+    end_x = int(pos.right())
+    end_y = int(pos.bottom())
+    cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,0,255), 1)
+    rects.append((start_x, start_y, end_x, end_y))
     
-    # Process detections
-    # Loop through detections
-    for i in np.arange(0, detections.shape[2]):
-        # Filter out weak detections
-        # Ensure predicted probability is greater then minimum threshold
-        if detections[0, 0, i ,2] > 0.5:
-            # Compute x,y bounding box coordinates for object
-            # Update bounding box rectangles list
-            box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
-            rectangles.append(box.astype("int"))
+    return rects
 
-            # Draw bounding box around the object
-            (start_x, start_y, end_x, end_y) = box.astype("int")
-            cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)
-
-    # Update centroid tracker with computed bounding boxes
-    objects = ct.update(rectangles)
-    return objects
 
 

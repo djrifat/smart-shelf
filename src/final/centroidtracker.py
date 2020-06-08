@@ -8,11 +8,13 @@ provided it produces an set of bounding boxes ((x1,y1) (x2,y2))
 '''
 
 # Import necessary packages
-import numpy as np
-import cv2
 from scipy.spatial import distance as dist
 from collections import OrderedDict
 from imutils.video import FPS
+import numpy as np
+import time
+import copy
+import cv2
 
 class CentroidTracker():
 	'''
@@ -22,14 +24,16 @@ class CentroidTracker():
 	'''
 
 	# @param maxDisappeared: Number of consecutive frames an object is allowed to "disappear"
-	def __init__(self, maxDisappeared=50, maxDistance=50):
+	def __init__(self, maxDisappeared=30, maxDistance=50):
 		# Initialize unique object ID
 		# Ordered dictionaries to keep track of object ID's and its centroids
 		self.next_object_ID = 0
 		self.total_persons_detected = 0
 		self.fps = FPS()
+		self.elapsed_time = 0
 		self.objects = OrderedDict()
 		self.disappeared = OrderedDict()
+		self.captured_data = {}
 		self.maxDisappeared = maxDisappeared
 		self.maxDistance = maxDistance
 
@@ -39,33 +43,46 @@ class CentroidTracker():
 		# Use next available object ID to store the centroid
 		self.objects[self.next_object_ID] = centroid
 		self.disappeared[self.next_object_ID] = 0
-		self.next_object_ID += 1
-		self.total_persons_detected += 1
-		self.fps.start()  
+		print("---------------")
 		print("[INFO] OBJECT DETECTED")
 		print("[INFO] OBJECT REGISTERED WITH ID: ", self.next_object_ID)
-		print("[INFO] START TRACKING DWELL TIME")
+		print("[INFO] START TRACKING DWELL TIME OF ID: ", self.next_object_ID)
+		self.next_object_ID += 1
+		self.total_persons_detected += 1
+		self.fps.start()
 	
+	def convert_time(self, elapsed_time_in_seconds):
+		return time.strftime("%H:%M:%S", time.gmtime(elapsed_time_in_seconds))
+
 	def total_detections(self):
 		print("[INFO] TOTAL DETECTIONS TODAY: ", self.total_persons_detected)
+
+	def combine_tracking_data(self, object_dict, dwell_time):
+		object_dict['Dwell time'] = dwell_time
+		return object_dict
+
 
 	# Deregister objects from the tracker
 	# @param object_ID:
 	def deregister(self, object_ID):
 		# Delete object ID from respective dictionaries
 		# to deregister an object ID
+		self.fps.stop()
+		self.elapsed_time = self.convert_time(int(self.fps.elapsed()))
+		print("---------------")
+		print("[INFO] OBJECT DEREGISTERED WITH ID: ", object_ID)
+		print("[INFO] TIME DETECTED: ", self.elapsed_time, " ID: ", object_ID)
+		print("---------------")
+
+		test = self.combine_tracking_data(self.captured_data, self.elapsed_time)
+		print("************",test)
+
 		del self.objects[object_ID]
 		del self.disappeared[object_ID]
-		self.fps.stop()
-		print("[INFO] OBJECT DEREGISTERED WITH ID: ", object_ID)
-		print("[INFO] TIME DETECTED: {:.2f}".format(self.fps.elapsed()), "ID: ", object_ID)
 		self.next_object_ID -= 1
 
-	def time_alive(self, object_ID):
-		return None
-
 	# Update centroid tracker
-	# @param rectangles: List of bounding box rectangles, from an object detector. Input format tulpe(startX, startY, endX, endY)
+	# @param rectangles: List of bounding box rectangles, from an object detector. Input format tulpe(start_x, start_y, end_x, end_y)
 	# @return self.objects: Object list
 	def update(self, rectangles):
 		# Check if bounding box input list is empty
@@ -86,12 +103,12 @@ class CentroidTracker():
 		input_centroids = np.zeros((len(rectangles), 2), dtype="int")
 
 		# Loop through bounding boxes
-		for (i, (startX, startY, endX, endY)) in enumerate(rectangles):
+		for (i, (start_x, start_y, end_x, end_y)) in enumerate(rectangles):
 			# Derive the centroid using the bounding box coordinates
 			# Store derived coordinates in numpy array
-			cX = int((startX + endX) / 2.0)
-			cY = int((startY + endY) / 2.0)
-			input_centroids[i] = (cX, cY)
+			centroid_x = int((start_x + end_x) / 2.0)
+			centroid_y = int((start_y + end_y) / 2.0)
+			input_centroids[i] = (centroid_x, centroid_y)
 
 		# If no objects are tracked
 		# take input centroids and register them
@@ -170,12 +187,3 @@ class CentroidTracker():
 		self.fps.update()
 		# Return tracked objects
 		return self.objects
-
-
-
-						
-
-					
-
-
-

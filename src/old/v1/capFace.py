@@ -1,15 +1,14 @@
 import cv2
 from imutils.video import FPS
 import argparse
+import imutils
 
-casc_path = 'haarcascade_frontalface_alt.xml'
+casc_path = 'haar_cascade/haarcascade_frontalface_alt.xml'
 faceCascade = cv2.CascadeClassifier(casc_path)
 
 # grab the reference to the webcam
 cap = cv2.VideoCapture(0)
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 fps = FPS().start()
 
@@ -17,7 +16,7 @@ fps = FPS().start()
 while True:
 	# grab the current frame
 	ret, frame = cap.read()
-	(grabbed, frame) = cap.read()
+	frame = imutils.resize(frame, width=400) 
 
 	# if we are viewing a video and we did not grab a frame,
 	# then we have reached the end of the video
@@ -43,15 +42,13 @@ while True:
 
 	fps.update()
 
-	print(faces)
-
-	fps.stop()
-	print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
-	print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
-
 	# if the 'q' key is pressed, stop the loop
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
+
+fps.stop()
+print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
+print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 # close all windows
 cap.release()

@@ -14,7 +14,6 @@ from scipy.spatial import distance as dist
 from collections import OrderedDict
 from imutils.video import FPS
 
-
 class CentroidTracker():
 	'''
 	Class method tracks objects using their centroid (center point),
@@ -40,14 +39,17 @@ class CentroidTracker():
 		# Use next available object ID to store the centroid
 		self.objects[self.next_object_ID] = centroid
 		self.disappeared[self.next_object_ID] = 0
+		print("[INFO] OBJECT DETECTED")
+		print("[INFO] OBJECT REGISTERED WITH ID: ", self.next_object_ID)
+		print("[INFO] START TRACKING DWELL TIME OF ID: ", self.next_object_ID)
 		self.next_object_ID += 1
 		self.total_persons_detected += 1
-		self.fps.start()  
-		print("START OBJECT TRACK TIME")
-		print("OBJECT REGISTERED: ", self.next_object_ID)
+		self.fps.start()
+		#print("[INFO] OBJECT DETECTED")
+		#print("[INFO] OBJECT REGISTERED WITH ID: ", self.next_object_ID)
 	
 	def total_detections(self):
-		print("[INFO] Total detections today: ", self.total_persons_detected)
+		print("[INFO] TOTAL DETECTIONS TODAY: ", self.total_persons_detected)
 
 	# Deregister objects from the tracker
 	# @param object_ID:
@@ -57,6 +59,7 @@ class CentroidTracker():
 		del self.objects[object_ID]
 		del self.disappeared[object_ID]
 		self.fps.stop()
+		print("[INFO] OBJECT DEREGISTERED WITH ID: ", object_ID)
 		print("[INFO] TIME DETECTED: {:.2f}".format(self.fps.elapsed()), "ID: ", object_ID)
 		self.next_object_ID -= 1
 
@@ -110,8 +113,7 @@ class CentroidTracker():
 			# OUTPUT: Numpy array of shape (# of object centroids, # of input centroids)
 			object_centroid_distance = dist.cdist(np.array(object_centroids), input_centroids)
 
-			# Find smallest value in each row
-			# Sort tow index based on minimal value
+			# Find smallest value in each row, sort row index based on minimal value
 			# Sets the row with the smallest value at the front of the index list
 			rows = object_centroid_distance.min(axis=1).argsort()
 
@@ -124,41 +126,35 @@ class CentroidTracker():
 			used_rows = set()
 			used_cols = set()
 			
-			# Loop over row, column index tulpes
 			for (row, col) in zip(rows, cols):
 
-				# If value (row/col) already has been examined ignore it
+				# Ignore if already examined
 				if row in used_rows or col in used_cols:
 					continue
 				
-				# if the distance between centroids is greater than
-				# the maximum distance, do not associate the two
-				# centroids to the same object
+				# Check if centroid distance preceeds maximum
 				if object_centroid_distance[row, col] > self.maxDistance:
 					continue
 
-				# if value hasn't been examined yet,
-				# grab object ID(current row) set new centroid
-				# reset dissapeared counter
+				# grab object ID(current row) set new centroid if not examined
 				object_ID = object_IDs[row]
 				self.objects[object_ID] = input_centroids[col]
 				self.disappeared[object_ID] = 0
 
-				# Indicates that each row/column index 
-				# have been examined, respectively
+				# Indicates that each row/column index are examined
 				used_rows.add(row)
 				used_cols.add(col)
 
-			# Compute row and col index that haven't been examined yet
+			# Compute unexamined row and col index 
 			unused_rows = set(range(0, object_centroid_distance.shape[0])).difference(used_rows)
 			unused_cols = set(range(0, object_centroid_distance.shape[1])).difference(used_cols)
 
-			# In case object centroids(current) are bigger then the input centroids(new),
-			# check if any objects are lost or disappeared
+			# If object centroids(current) are bigger then input centroids(new),
+			# check for lost or disappeared objects
 			if object_centroid_distance.shape[0] >= object_centroid_distance.shape[1]:					
 				for row in unused_rows:
-					# Take object ID for matching row index 
-					# and increment disappeared counter
+					
+					# Grab id and increment counter
 					object_ID = object_IDs[row]
 					self.disappeared[object_ID] += 1
 

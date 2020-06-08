@@ -1,10 +1,10 @@
 # USAGE
 # python dlib_tracker.py --conf utils/config.json
 
-from utils.detector_utils import detect_faces
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
 from utils.conf import Conf
+import utils.detector_utils
 import numpy as np
 import argparse
 import imutils
@@ -25,7 +25,8 @@ conf = Conf(args["conf"])
 ct = CentroidTracker()
 trackers = []
 total_frames = 0
-skip_frames = 30
+total_faces = 0
+skip_frames = conf["skip_frames"]
 
 # Load serialized model from disk
 print("[INFO] loading model...")
@@ -36,8 +37,6 @@ print("[INFO] starting video stream")
 vs = VideoStream(src=0).start()
 time.sleep(2.0)
 
-(H, W) = (None, None)
-
 # Start FPS counter
 fps = FPS().start()  
 
@@ -46,10 +45,8 @@ while True:
     # Read frame and resize it
     frame = vs.read()
     frame = imutils.resize(frame, width=500)
+    (H,W) = utils.detector_utils.grab_frame_dim(frame)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-    if H is None or W is None:
-        (H, W) = frame.shape[:2]
 
     status = "Waiting"
     rects = []
@@ -79,34 +76,22 @@ while True:
 
                 trackers.append(t)
                 cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)    
-    else:
-        
-        for t in trackers:
-            
+    else:  
+        for t in trackers:          
             status = "Tracking..."
-            t.update(rgb)
-            pos = t.get_position()
-
-            start_x = int(pos.left())
-            start_y = int(pos.top())
-            end_x = int(pos.right())
-            end_y = int(pos.bottom())
-            cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)
-            rects.append((start_x, start_y, end_x, end_y))
+            utils.detector_utils.unpack_tracker(frame, t, rgb, rects)
          
     # Update centroid tracker with computed bounding boxes
     objects = ct.update(rects)
 
     # Loop through tracked objects
     for (object_ID, centroid) in objects.items():   
-    
         # Draw ID and centroid of the object in the output frame
         text = "ID {}".format(object_ID)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
 
-    info = [("Status", status)]
-	# loop over the info tuples and draw them on our frame
+    info = [("Status: ", status)]
     for (i, (k, v)) in enumerate(info):
         text = "{}: {}".format(k, v)
         cv2.putText(frame, text, (10, H - ((i * 20) + 20)),

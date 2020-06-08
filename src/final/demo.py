@@ -1,32 +1,16 @@
-
-
-"""
-Final demo script
-
-Steps:
-- Detect face 
-- start face tracking
-- If atleast two faces are deteced: (with dnn or with haarcascade)
-    - Make buffer frame
-    - Send buffer frame to FACE API
-    - Display values returned from FACE API
-"""
-
 # USAGE
 # python demo.py --conf utils/config.json
-from azure.cognitiveservices.vision.face.models import APIErrorException
-from msrest.authentication import CognitiveServicesCredentials
-from azure.cognitiveservices.vision.face import FaceClient
-from utils.detector_utils import get_rectangle
-from utils.detector_utils import detect_faces
+from utils.WebcamVideoCapture import WebcamVideoCapture
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
 from utils.conf import Conf
+import utils.detector_utils
 import numpy as np
 import argparse
+import operator
 import imutils
-import emoji
 import sched
+import json
 import time
 import dlib
 import cv2
@@ -38,50 +22,42 @@ ap.add_argument('-c', '--conf', required=True,
 args = vars(ap.parse_args())
 conf = Conf(args["conf"])
 
-ENDPOINT = 'https://eastus.api.cognitive.microsoft.com/face/v1.0/detect'
-KEY = '2d0523e810c24bd5b7fd4448fbf71c67' 
-face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
-
-
-
-# Initialize centroid tracker
+# Initialize centroid tracker and nessecary parameters
 ct = CentroidTracker()
+#skip_frames = conf["skip_frames"]
+skip_frames = 30
 trackers = []
 total_frames = 0
-skip_frames = 30
-total_nr_faces = 0
+
+total_faces = 0
+faces_in_frame = 0
+api_call_threshold = 2
 
 # Load serialized model from disk
 print("[INFO] loading model...")
-net = cv2.dnn.readNetFromCaffe(conf["prototxt"], conf["model"])
+net = cv2.dnn.readNet(conf["prototxt"], conf["model"])
 
-# Initialize video stream and warmup camera sensor
+# Initialize video stream and warmup camera sensor and start FPS counter
 print("[INFO] starting video stream")
-vs = VideoStream(src=0).start()
+cap = WebcamVideoCapture(src=0).start()
 time.sleep(2.0)
-
-(H, W) = (None, None)
-
-# Start FPS counter
 fps = FPS().start()  
 
 # Loop through frames from video stream
 while True:
     # Read frame and resize it
-    frame = vs.read()
+    frame = cap.read()
+    cap.set_buffer()
     frame = imutils.resize(frame, width=500)
-    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) 
 
-    if H is None or W is None:
-        (H, W) = frame.shape[:2]
+    try:
+        (H,W) = utils.detector_utils.grab_frame_dim(frame)
+    except AttributeError:
+        print("Shape not found")
 
-    status = "Waiting"
-    rects = []
-
-    detected_faces = face_client.face.detect_with_stream(frame)
-    if not detected_faces:
-        raise Exception("No face detected from image ")
-
+    status = "Waiting..."
+    rectangles = []
 
     if total_frames % skip_frames == 0:
 
@@ -95,53 +71,83 @@ while True:
         # Loop through detections
         for i in np.arange(0, detections.shape[2]):
             # Filter out weak detections
-            # Ensure predicted probability is greater then minimum threshold
             if detections[0, 0, i ,2] > conf['confidence']:
                 # Compute x,y bounding box coordinates for object
                 # Update bounding box rectangles list
                 box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
-                (start_x, start_y, end_x, end_y) = box.astype("int")
 
+                (start_x, start_y, end_x, end_y) = box.astype("int")
                 t = dlib.correlation_tracker()
                 rect = dlib.rectangle(start_x, start_y, end_x, end_y)
                 t.start_track(rgb, rect)
 
                 trackers.append(t)
-                cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)    
-    else:
-        
-        for t in trackers:
-            
-            status = "Tracking..."
-            t.update(rgb)
-            pos = t.get_position()
 
-            start_x = int(pos.left())
-            start_y = int(pos.top())
-            end_x = int(pos.right())
-            end_y = int(pos.bottom())
-            cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)
-            rects.append((start_x, start_y, end_x, end_y))
-         
+        faces_in_frame = len(trackers)
+        if faces_in_frame != total_faces:
+            total_faces = faces_in_frame
+
+        if total_faces >= api_call_threshold:
+            print("Threshold reached sending API request")
+            try:
+                response = utils.detector_utils.make_request(frame)
+            except ValueError as e:
+                print("Some error occurred: ", e)
+
+            if not response:
+                print("Nothing detected")
+                test, emotion = {},{}
+            else:
+                test = response[0]
+                emotion = test['faceAttributes']['emotion']
+                
+            #print("-----: ",emotion)
+            #print(type(emotion))
+  
+    else:  
+        for t in trackers:          
+            status = "Tracking..."
+            utils.detector_utils.unpack_tracker(frame, t, rgb, rectangles)
+            #(start_X, start_Y, end_X, end_Y) = utils.detector_utils.unpack_rect(frame, t, rgb, rectangles)
+
+            #for i, k  in enumerate(face_display):
+                #cv2.putText(frame, "{0}: {1}".format(k, face_display[k]), 
+                    #(left+width+5, top + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+                    #(start_x + (end_y-start_y)-25, start_y + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+    '''
+    for face in response:
+        
+        face_attribute = face['faceAttributes']
+        #face_rect = face['faceRectangle']
+        emotions = face['faceAttributes']['emotion']
+        current_mood = max(emotions.items(), key=operator.itemgetter(1))[0]
+        #left, top, width, height = face_rect['left'], face_rect['top'], face_rect['width'], face_rect['height']
+        response2 = dict(response)
+        print(type(response2))
+        face_display = {
+            'gender': face_attribute['gender'],
+            'age': face_attribute['age'],
+            'mood': current_mood
+        }   
+    ''' 
+
     # Update centroid tracker with computed bounding boxes
-    objects = ct.update(rects)
+    objects = ct.update(rectangles)
 
     # Loop through tracked objects
     for (object_ID, centroid) in objects.items():   
-    
         # Draw ID and centroid of the object in the output frame
         text = "ID {}".format(object_ID)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
+     
 
-    info = [("Status", status)]
-	# loop over the info tuples and draw them on our frame
+    info = [("Status: ", status)]
     for (i, (k, v)) in enumerate(info):
         text = "{}: {}".format(k, v)
         cv2.putText(frame, text, (10, H - ((i * 20) + 20)),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
     
-    #cv2.imshow('result.png', result_o)
     cv2.imshow("Mirabeau smart shelf", frame)
 
     key = cv2.waitKey(1) & 0xFF
@@ -158,7 +164,8 @@ ct.total_detections()
 print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
 print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
+cap.stop()
 cv2.destroyAllWindows()
-vs.stop()
+
 
 
