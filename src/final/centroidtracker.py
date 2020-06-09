@@ -47,6 +47,7 @@ class CentroidTracker():
 		print("[INFO] OBJECT DETECTED")
 		print("[INFO] OBJECT REGISTERED WITH ID: ", self.next_object_ID)
 		print("[INFO] START TRACKING DWELL TIME OF ID: ", self.next_object_ID)
+		print("---------------")
 		self.next_object_ID += 1
 		self.total_persons_detected += 1
 		self.fps.start()
