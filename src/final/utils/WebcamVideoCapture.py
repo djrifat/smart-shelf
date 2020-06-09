@@ -32,5 +32,5 @@ class WebcamVideoCapture:
     def stop(self):
         self.stopped = True
 
-    def set_buffer(self):
-        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, 2)
+    def set_buffer(self, buffer_size):
+        self.stream.set(cv2.CAP_PROP_BUFFERSIZE, buffer_size)
