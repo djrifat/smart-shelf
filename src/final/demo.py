@@ -32,6 +32,7 @@ total_frames = 0
 total_faces = 0
 faces_in_frame = 0
 api_call_threshold = 2
+frame_buffer_size = 2
 
 # Load serialized model from disk
 print("[INFO] loading model...")
@@ -47,7 +48,7 @@ fps = FPS().start()
 while True:
     # Read frame and resize it
     frame = cap.read()
-    cap.set_buffer()
+    cap.set_buffer(frame_buffer_size)
     frame = imutils.resize(frame, width=500)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) 
 
