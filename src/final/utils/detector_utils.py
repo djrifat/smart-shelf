@@ -80,6 +80,7 @@ def unpack_tracker(frame, tracker, rgb, rectangles):
     end_y = int(pos.bottom())
     cv2.rectangle(frame, (start_x, start_y), (end_x, end_y), (0,255,0), 1)
     rectangles.append((start_x, start_y, end_x, end_y))
+    #print("RECT TYPE: ", rectangles)
     
     return rectangles
 
