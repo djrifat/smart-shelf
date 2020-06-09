@@ -86,15 +86,20 @@ while True:
                 'mood': current_mood
             }
 
+            for i, k  in enumerate(face_display):
+                cv2.putText(frame, "{0}: {1}".format(k, face_display[k]), 
+                    (left+width+5, top + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+                    #(start_x + (end_y-start_y)-25, start_y + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+
             #for i, k  in enumerate(face_display):
-            for k, v in face_display.items():
+            #for k, v in face_display.items():
                 #print(k, face_display[k])
-                print (k, v)
+                #print (k, v)
                 #print("ZERO: ",centroid[0])
                 #print("ONE: ", k, face_display[k])
                 #text2 = "{0}: {1}".format(v, face_display[])
-                cv2.putText(frame, "{0}: {1}".format(v, face_display[v]), 
-                    (centroid[0]+5, centroid[1] + 5 + 20*k),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA) 
+                #cv2.putText(frame, "{0}: {1}".format(v, face_display[v]), 
+                    #(centroid[0]+5, centroid[1] + 5 + 20*k),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA) 
     
     info = [("Status: ", status)]
     for (i, (k, v)) in enumerate(info):
