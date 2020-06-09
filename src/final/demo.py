@@ -31,7 +31,7 @@ total_frames = 0
 
 total_faces = 0
 faces_in_frame = 0
-api_call_threshold = 2
+api_call_threshold = 1
 frame_buffer_size = 2
 
 # Load serialized model from disk
@@ -97,18 +97,17 @@ while True:
 
             if not response:
                 print("Nothing detected")
-                test, emotion = {},{}
+                emotion = {}
             else:
-                test = response[0]
-                emotion = test['faceAttributes']['emotion']
-                
-            #print("-----: ",emotion)
-            #print(type(emotion))
+                emotion = response[0]['faceAttributes']['emotion']             
+            print("-----: ",emotion)
   
     else:  
         for t in trackers:          
             status = "Tracking..."
             utils.detector_utils.unpack_tracker(frame, t, rgb, rectangles)
+            (x1,x2,y1,y2) = utils.detector_utils.unpack_tracker(frame, t, rgb, rectangles)
+            print("TEEEEEEST VALUES: ",(x1,x2,y1,y2))
             #(start_X, start_Y, end_X, end_Y) = utils.detector_utils.unpack_rect(frame, t, rgb, rectangles)
 
             #for i, k  in enumerate(face_display):
