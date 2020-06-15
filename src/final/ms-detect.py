@@ -17,6 +17,7 @@ total_frames = 0
 skip_frames = 30
 trackers = []
 face_display = {}
+test_dict
 
 total_faces = 0
 faces_in_frame = 0
@@ -50,7 +51,6 @@ while True:
         response = utils.detector_utils.make_request(frame)
 
         for face in response:
-
             face_attribute = face['faceAttributes']
             face_rect = face['faceRectangle']
             emotions = face['faceAttributes']['emotion']
@@ -63,12 +63,14 @@ while True:
             rect = dlib.rectangle(start_x,start_y,end_x,end_y)
             t.start_track(rgb, rect)
             trackers.append(t)
-
+            
             face_display = {
                 'gender': face_attribute['gender'],
                 'age': face_attribute['age'],
                 'mood': current_mood
             } 
+            
+            print("FACE DISPLAY", face_display, type(face_display))
 
         faces_in_frame = len(trackers)
         if faces_in_frame != total_faces:
@@ -91,6 +93,7 @@ while True:
         for t in trackers:
             status = "Tracking..."
             utils.detector_utils.unpack_tracker(frame, t, rgb, rectangles) 
+            '''
             for face in response:
 
                 face_attribute = face['faceAttributes']
@@ -106,21 +109,44 @@ while True:
                     'age': face_attribute['age'],
                     'mood': current_mood
                 } 
-
+            '''
     objects = ct.update(rectangles) 
+    print("-----", face_display)
+
+    for face in response:
+
+        face_attribute = face['faceAttributes']
+        face_rect = face['faceRectangle']
+        emotions = face['faceAttributes']['emotion']
+        current_mood = max(emotions.items(), key=operator.itemgetter(1))[0]
+
+        left, top, width, height = face_rect['left'], face_rect['top'], face_rect['width'], face_rect['height']
+        #(start_x, start_y), (end_x, end_y) = utils.detector_utils.get_rectangle(face)
+
+        face_display = {
+            'gender': face_attribute['gender'],
+            'age': face_attribute['age'],
+            'mood': current_mood
+        } 
+
+        for i, k  in enumerate(face_display):
+            cv2.putText(frame, "{0}: {1}".format(k, face_display[k]),
+                (left+width+5, top + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+                #(centroid[0] - 10*i, centroid[1]+20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
 
     for (object_ID, centroid) in objects.items():
         # Draw ID and centroid of the object in the output frame
         text = "ID {}".format(object_ID)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
-        
+        '''
         for i, k  in enumerate(face_display):
             print("Face Display: ", k, face_display[k])
             cv2.putText(frame, "{0}: {1}".format(k, face_display[k]),
                 #(left+width+5, top + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
-                (centroid[0] - 10, centroid[1]+20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
-    
+                (centroid[0] - 10*i, centroid[1]+20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+        '''
+
     info = [("Status: ", status)]
     for (i, (k, v)) in enumerate(info):
         text = "{}: {}".format(k, v)
