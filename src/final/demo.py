@@ -78,6 +78,7 @@ while True:
                 # Update bounding box rectangles list
                 box = detections[0, 0, i, 3:7] * np.array([W,H,W,H])
 
+                # Unpack boundingbox coordinates and append to dlib tracker
                 (start_x, start_y, end_x, end_y) = box.astype("int")
                 t = dlib.correlation_tracker()
                 rect = dlib.rectangle(start_x, start_y, end_x, end_y)
