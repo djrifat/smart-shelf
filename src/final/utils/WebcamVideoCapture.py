@@ -13,10 +13,12 @@ class WebcamVideoCapture:
         # Indicate if thread should stop
         self.stopped = False
 
+    # Start camera feed
     def start(self):
         Thread(target=self.update, args=()).start()
         return self
     
+    # Update frames
     def update(self):
         while True:
             # Stop thread
@@ -29,8 +31,10 @@ class WebcamVideoCapture:
         # Return most recent frame
         return self.frame
     
+    # Stop camera feed
     def stop(self):
         self.stopped = True
 
+    # Set frame buffer
     def set_buffer(self, buffer_size):
         self.stream.set(cv2.CAP_PROP_BUFFERSIZE, buffer_size)
