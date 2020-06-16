@@ -31,6 +31,7 @@ class CentroidTracker():
 		self.total_persons_detected = 0
 		self.fps = FPS()
 		self.elapsed_time = 0
+		self.time_stamp = time.localtime()
 		self.objects = OrderedDict()
 		self.disappeared = OrderedDict()
 		self.captured_data = {}
@@ -47,6 +48,7 @@ class CentroidTracker():
 		print("[INFO] OBJECT DETECTED")
 		print("[INFO] OBJECT REGISTERED WITH ID: ", self.next_object_ID)
 		print("[INFO] START TRACKING DWELL TIME OF ID: ", self.next_object_ID)
+		print("[INFO] OBJECT DETECTED AT TIME: ", time.strftime("%H:%M:%S", self.time_stamp))
 		print("---------------")
 		self.next_object_ID += 1
 		self.total_persons_detected += 1
@@ -75,8 +77,8 @@ class CentroidTracker():
 		print("[INFO] TIME DETECTED: ", self.elapsed_time, " ID: ", object_ID)
 		print("---------------")
 
-		test = self.combine_tracking_data(self.captured_data, self.elapsed_time)
-		print("************",test)
+		#test = self.combine_tracking_data(self.captured_data, self.elapsed_time)
+		#print("************",test)
 
 		del self.objects[object_ID]
 		del self.disappeared[object_ID]
