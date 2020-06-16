@@ -31,7 +31,7 @@ total_frames = 0
 
 total_faces = 0
 faces_in_frame = 0
-api_call_threshold = 1
+api_call_threshold = 2
 frame_buffer_size = 2
 
 # Load serialized model from disk
@@ -49,7 +49,7 @@ while True:
     # Read frame and resize it
     frame = cap.read()
     cap.set_buffer(frame_buffer_size)
-    frame = imutils.resize(frame, width=800)
+    frame = imutils.resize(frame, width=500)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) 
 
     try:
@@ -92,7 +92,7 @@ while True:
 
         # Make API call on condition
         if total_faces >= api_call_threshold:
-            print("Threshold reached sending API request")
+            print("[INFO] Threshold reached sending API request")
             try:
                 response = utils.detector_utils.make_request(frame)
             except ValueError as e:
@@ -100,13 +100,14 @@ while True:
 
             # Handle empty response
             if not response:
-                print("Nothing detected")
+                print("[INFO] Nothing detected")
                 emotion = {}
             else:
+                print("[INFO] API call succesful")
                 #for face in response:
-                for i in response:
-                    for x in i:
-                        print(i[x])
+                #for i in response:
+                    #for x in i:
+                        #print("TEST", i[x])
                 #for i in response:
                     #emotion = response[0]['faceAttributes']['emotion'] 
                     #print("----------",emotion)  
@@ -130,7 +131,6 @@ while True:
         current_mood = max(emotions.items(), key=operator.itemgetter(1))[0]
 
         left, top, width, height = face_rect['left'], face_rect['top'], face_rect['width'], face_rect['height']
-        #(start_x, start_y), (end_x, end_y) = utils.detector_utils.get_rectangle(face)
 
         face_display = {
             'gender': face_attribute['gender'],
