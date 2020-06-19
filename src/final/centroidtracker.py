@@ -128,7 +128,6 @@ class CentroidTracker():
 
 			# Compute distance (Euclidean) between object centroid and input centroid
 			# to match an input centroid to an existing object centroid
-			# OUTPUT: Numpy array of shape (# of object centroids, # of input centroids)
 			object_centroid_distance = dist.cdist(np.array(object_centroids), input_centroids)
 
 			# Find smallest value in each row, sort row index based on minimal value
