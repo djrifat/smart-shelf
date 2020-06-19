@@ -28,7 +28,6 @@ def make_request(buffer_frame):
 
     ENDPOINT = 'https://eastus.api.cognitive.microsoft.com/face/v1.0/detect'
     KEY = '2d0523e810c24bd5b7fd4448fbf71c67'   
-    #KEY = '5d4e91c5581544229d0cdc2bc73d89e1'   # MIRABEAU
 
     params = {
         'returnFaceId': 'false',
@@ -41,6 +40,7 @@ def make_request(buffer_frame):
         'Ocp-Apim-Subscription-Key': KEY
     }
 
+    # Convert grabbed frame
     f = BytesIO()
     PIL.Image.fromarray(buffer_frame).save(f, 'png')  
     data = f.getvalue()
