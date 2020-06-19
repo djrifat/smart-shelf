@@ -31,7 +31,7 @@ total_frames = 0
 
 total_faces = 0
 faces_in_frame = 0
-api_call_threshold = 2
+api_call_threshold = 1
 frame_buffer_size = 2
 
 # Load serialized model from disk
@@ -52,6 +52,7 @@ while True:
     frame = imutils.resize(frame, width=500)
     rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) 
 
+    # Grab frame dimensions
     try:
         (H,W) = utils.detector_utils.grab_frame_dim(frame)
     except AttributeError:
@@ -124,26 +125,7 @@ while True:
     objects = ct.update(rectangles)
 
     # Loop through API response
-    for face in response:
-
-        face_attribute = face['faceAttributes']
-        face_rect = face['faceRectangle']
-        emotions = face['faceAttributes']['emotion']
-        current_mood = max(emotions.items(), key=operator.itemgetter(1))[0]
-
-        left, top, width, height = face_rect['left'], face_rect['top'], face_rect['width'], face_rect['height']
-
-        face_display = {
-            'gender': face_attribute['gender'],
-            'age': face_attribute['age'],
-            'mood': current_mood
-        } 
-
-        # Display retrieved emotions from API call
-        for i, k  in enumerate(face_display):
-            cv2.putText(frame, "{0}: {1}".format(k, face_display[k]),
-                (left+width+5, top + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,0,255), 1, cv2.LINE_AA)
-                #(centroid[0] - 10*i, centroid[1]+20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+    
 
     # Loop through tracked objects
     for (object_ID, centroid) in objects.items():   
@@ -151,6 +133,27 @@ while True:
         text = "ID {}".format(object_ID)
         cv2.putText(frame, text, (centroid[0] - 10, centroid[1] - 10),
             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
+
+        for face in response:
+
+            face_attribute = face['faceAttributes']
+            face_rect = face['faceRectangle']
+            emotions = face['faceAttributes']['emotion']
+            current_mood = max(emotions.items(), key=operator.itemgetter(1))[0]
+
+            left, top, width, height = face_rect['left'], face_rect['top'], face_rect['width'], face_rect['height']
+
+            face_display = {
+                'gender': face_attribute['gender'],
+                'age': face_attribute['age'],
+                'mood': current_mood
+            } 
+
+            # Display retrieved emotions from API call
+            for i, k  in enumerate(face_display):
+                cv2.putText(frame, "{0}: {1}".format(k, face_display[k]),
+                    #(left+width+5, top + 5 + 20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
+                    (centroid[0] + 15, centroid[1]+20*i),cv2.FONT_HERSHEY_DUPLEX, 0.5, (0,255,0), 1, cv2.LINE_AA)
      
     # Visualize status information
     info = [("Status: ", status)]
