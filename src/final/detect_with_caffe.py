@@ -1,6 +1,6 @@
 # USAGE
-# python demo.py --conf utils/config.json
-# python3 demo.py --conf utils/config.json
+# python detect_with_caffe.py --conf utils/config.json
+# python3 detect_with_caffe.py --conf utils/config.json
 from utils.WebcamVideoCapture import WebcamVideoCapture
 from centroidtracker import CentroidTracker
 from imutils.video import VideoStream, FPS
